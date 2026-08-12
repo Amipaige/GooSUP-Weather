@@ -1,0 +1,33 @@
+name: Fix mobile wind guide
+on:
+  push:
+    paths:
+      - 'wind-directions-cooden-mobile.svg'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update guide
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text()
+          pattern=r'<section class="card wind-guide">.*?</section><section class="card"><div class="ey">SUP TRAFFIC-LIGHT RULES</div>'
+          replacement='<section class="card wind-guide"><div class="ey">SUP WIND DIRECTION GUIDE</div><img class="wind-guide-img" src="wind-directions-cooden-mobile.svg?v=20" alt="Wind directions explained for Cooden Beach. Arrows show where the wind is blowing to."><div class="guide-note">Wind is shown in the direction it is blowing.</div></section><section class="card"><div class="ey">SUP TRAFFIC-LIGHT RULES</div>'
+          s2=re.sub(pattern,replacement,s,flags=re.S)
+          if s2==s: raise SystemExit('Wind guide section not found')
+          css='.wind-guide-img{display:block;width:100%;height:auto;max-width:100%;border-radius:14px}.guide-note{font-size:12px;color:#667078;margin-top:7px}'
+          s2=s2.replace('</style>',css+'</style>')
+          s2=s2.replace('@media(max-width:700px){','@media(max-width:700px){.wind-guide{padding:14px}.wind-guide-img{width:100%;height:auto}')
+          p.write_text(s2)
+          PY
+          git config user.name 'GooSUP Weather'
+          git config user.email 'goosup-weather@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Use uploaded wind guide and improve mobile layout'
+          git push
