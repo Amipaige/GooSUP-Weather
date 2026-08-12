@@ -1,0 +1,39 @@
+name: Add live wind direction arrow
+on:
+  push:
+    paths:
+      - '.github/workflows/add-live-wind-arrow.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add live rotating wind arrow
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text()
+          if 'id="windArrow"' not in s:
+              s=s.replace('<div class="status"><div id="lamp" class="lamp"></div><div><h2 id="head">Checking…</h2><div id="shore">Checking direction…</div></div></div>', '<div class="status"><div id="lamp" class="lamp"></div><div class="wind-arrow-wrap"><div id="windArrow" class="wind-arrow" aria-label="Live wind direction">↑</div></div><div><h2 id="head">Checking…</h2><div id="shore">Checking direction…</div></div></div>')
+          css='.wind-arrow-wrap{width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex:0 0 54px}.wind-arrow{font-size:48px;line-height:1;font-weight:900;display:block;transform:rotate(0deg);transition:transform 1.2s ease;color:#26333b;text-shadow:0 2px 3px #0002}.wind-arrow::after{content:"";display:block}.wind-arrow-wrap+div{}'
+          if '.wind-arrow-wrap{' not in s:
+              s=s.replace('</style>',css+'</style>')
+          old="w=mph(mv(b,'wind_speed_10m',i)),g=mph(mv(b,'wind_gusts_10m',i)),s=shore(mv(b,'wind_direction_10m',i)),wv=mv(sea,'wave_height',i)||0"
+          new="w=mph(mv(b,'wind_speed_10m',i)),g=mph(mv(b,'wind_gusts_10m',i)),wd=mv(b,'wind_direction_10m',i)||0,s=shore(wd),wv=mv(sea,'wave_height',i)||0"
+          s=s.replace(old,new)
+          marker="$('lamp').className='lamp '+['g','a','r'][r];"
+          repl=marker+"$('windArrow').style.transform='rotate('+(((wd+180)%360))+'deg)';"
+          s=s.replace(marker,repl)
+          if 'setInterval(load,600000)' not in s:
+              s=s.replace('load();</script>', 'load();setInterval(load,600000);</script>')
+          p.write_text(s)
+          PY
+          git config user.name 'GooSUP Weather'
+          git config user.email 'goosup-weather@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Add live wind direction arrow' || true
+          git push
