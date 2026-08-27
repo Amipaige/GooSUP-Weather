@@ -1,7 +1,7 @@
 const CACHE='goosup-v24';
 const ASSETS=['./','./index.html','./manifest.json','./logo.svg'];
 const SUPA='https://sgtppeifgzxqfbzuqnmg.supabase.co/functions/v1/goosup-alerts';
-const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoic2d0cHBl...';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndHBwZWlmZ3p4cWZienVxbm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzcwOTEsImV4cCI6MjEwMzQxMzA5MX0.cUiLrvwrYMcHIzaKd1N__7-wDW7v8dBD0Zy8zq3bOTQ';
 const VAPID='BGizXfQLvJp0rtUCmtb6pjTX45G8jeepMBiAfYfPwr4oqeIsfYEN-UIC7YKj3pLuR3eZi1XEsbSkcy1mRvutgZs';
 const ASYNC_SCRIPT=`<style>
 #days{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:10px!important}
